@@ -37,7 +37,7 @@ Give clear step-by-step answer.
 
     output = llm(
         prompt,
-        max_tokens=150,
+        max_tokens=300,
         temperature=0.2,
         stop=["</s>"]
     )
