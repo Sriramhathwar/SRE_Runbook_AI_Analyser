@@ -5,7 +5,7 @@ from rag import build_index, retrieve
 from llm import generate_answer
 
 app = Flask(__name__, template_folder="../templates")
-
+conversation_history = []
 # Load once (important for performance)
 docs = load_docs("../docs")
 
@@ -27,7 +27,11 @@ def askAI():
     query = request.json.get("query")
     
     context = retrieve(query, index, all_chunks)
-    answer = generate_answer(query, context)
+    
+    conversation_history.append({"role": "user", "content": query})
+    answer = generate_answer(query, context, conversation_history)
+
+    conversation_history.append({"role": "assistant", "content": answer})
 
     return jsonify({
         "answer": answer,

@@ -7,23 +7,31 @@ llm = Llama(
     verbose=False
 )
 
-def generate_answer(query, context_chunks):
+def generate_answer(query, context_chunks, history):
     context = "\n".join(context_chunks)
-
+    if history is None:
+        history = []
+    history_text = ""
+    for msg in history[-4:]:  # last 4 messages only (important!)
+        if msg["role"] == "user":
+            history_text += f"User: {msg['content']}\n"
+        else:
+            history_text += f"Assistant: {msg['content']}\n"
+    
     prompt = f"""
 [INST]
 You are a Kubernetes SRE assistant.
 
-STRICT RULES:
-- Answer ONLY from runbooks
-- Give step-by-step solution
-- Do NOT hallucinate
+Conversation:
+{history_text}
 
 Runbook:
 {context}
 
-Question:
+Current Question:
 {query}
+
+Give clear step-by-step answer.
 [/INST]
 """
 
